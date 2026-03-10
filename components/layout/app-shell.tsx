@@ -1,13 +1,13 @@
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import { ActionsPanel } from './actions-panel';
-import { AppFooter } from './app-footer';
 import { MainContent } from './main-content';
-import { TopNavigation } from './top-navigation';
 import type { NavItem } from './types';
 
+import { useAuth } from "react-oidc-context";
+
 type AppShellProps = {
-  pageCode : string;
+  pageCode: string;
   title: string;
   subtitle: string;
   actions: string[];
@@ -22,21 +22,20 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export function AppShell({ title, subtitle, actions, pageCode }: AppShellProps) {
+  let auth = useAuth();
   const { width } = useWindowDimensions();
   const isCompact = width < 960;
-
+  
   return (
     <View style={styles.page}>
-      <TopNavigation items={NAV_ITEMS} compact={isCompact} />
-
       <View style={[styles.mainRow, isCompact && styles.mainRowCompact]}>
         {
-          pageCode === 'home' || pageCode === 'auth' ? <></> : <ActionsPanel items={actions} compact={isCompact} />
+          (pageCode === 'home' || pageCode === 'auth') || !auth.isAuthenticated ? <></> : <ActionsPanel title="" items={actions} compact={isCompact} />
         }
-        <MainContent title={title} subtitle={subtitle} />
+        {
+          auth.isAuthenticated || (pageCode === 'home' || pageCode === 'auth') ? <MainContent title={title} subtitle={subtitle} /> : <MainContent title={"You do not have enough permissions"} subtitle={"Please, log in with user with permisions needed."} />
+        }
       </View>
-
-      <AppFooter />
     </View>
   );
 }

@@ -1,7 +1,10 @@
 import { usePathname, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-
 import type { NavItem } from './types';
+
+import { AuthPanel } from './auth-panel';
+
+import React from 'react';
 
 type TopNavigationProps = {
   items: NavItem[];
@@ -9,6 +12,7 @@ type TopNavigationProps = {
 };
 
 export function TopNavigation({ items, compact = false }: TopNavigationProps) {
+  
   const pathname = usePathname();
   const router = useRouter();
 
@@ -17,7 +21,6 @@ export function TopNavigation({ items, compact = false }: TopNavigationProps) {
       <View style={[styles.navContainer, compact && styles.navContainerCompact]}>
         {items.map((item) => {
           const isActive = pathname === item.href;
-
           return (
             <Pressable
               key={item.href}
@@ -29,11 +32,7 @@ export function TopNavigation({ items, compact = false }: TopNavigationProps) {
         })}
       </View>
 
-      <Pressable
-        onPress={() => router.push('/auth')}
-        style={[styles.authButton, compact && styles.authButtonCompact]}>
-        <Text style={styles.authText}>Sing in/ Sing up</Text>
-      </Pressable>
+      <AuthPanel compact={compact}></AuthPanel>
     </View>
   );
 }

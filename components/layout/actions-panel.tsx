@@ -1,22 +1,25 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Dispatch, SetStateAction } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 type ActionsPanelProps = {
+  title?: string;
   items: string[];
+  links: Record<string, string>;
   compact?: boolean;
+  setAction: Dispatch<SetStateAction<string>>
 };
 
-export function ActionsPanel({ items, compact = false }: ActionsPanelProps) {
+export function ActionsPanel({ title = "ACTION_TITLE", items, links = {}, compact = false, setAction }: ActionsPanelProps) {
   return (
     <View style={[styles.panel, compact && styles.panelCompact]}>
-      <Text style={styles.title}>Actions (For specific page)</Text>
-
+      {
+        title !== "" ? <Text style={styles.item}>Actions for {title}</Text> : <Text style={styles.item}>See more at:</Text>
+      }
       {items.map((item) => (
-        <Text key={item} style={styles.item}>
-          - {item}
-        </Text>
+        <Pressable key={item} style={styles.actionButton} onPress={() => setAction(links[item])}>
+          <Text style={styles.item}>- {item}</Text>
+        </Pressable>
       ))}
-
-      <Text style={styles.item}>....</Text>
     </View>
   );
 }
@@ -46,5 +49,8 @@ const styles = StyleSheet.create({
     color: '#252525',
     fontSize: 20,
     lineHeight: 30,
+  },
+  actionButton: {
+    alignSelf: 'flex-start',
   },
 });
